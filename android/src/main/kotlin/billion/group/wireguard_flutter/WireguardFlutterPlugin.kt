@@ -171,7 +171,13 @@ class WireguardFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
             else -> flutterNotImplemented(result)
         }
     }
-
+    fun formatKBorMB(bytes: Long): String {
+        return when {
+            bytes >= 1024 * 1024 -> String.format("%.2f MB", bytes / (1024.0 * 1024.0))
+            bytes >= 1024 -> String.format("%.2f KB", bytes / 1024.0)
+            else -> "$bytes B"
+        }
+    }
     private fun isVpnActive(): Boolean {
         try {
             val connectivityManager =
@@ -292,8 +298,9 @@ class WireguardFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     private fun getDownloadData(result: Result) {
         scope.launch(Dispatchers.IO) {
             try {
-                val downloadData = futureBackend.await().getTransferData(tunnel(tunnelName)).rxBytes
-                flutterSuccess(result, downloadData)
+                val downloadData = futureBackend.await().getStatistics(tunnel(tunnelName)).totalRx()
+                Log.e(TAG, "getDownloadData - Success - ${formatKBorMB(downloadData)}")
+                flutterSuccess(result, formatKBorMB(downloadData))
             } catch (e: Throwable) {
                 Log.e(TAG, "getDownloadData - ERROR - ${e.message}")
                 flutterError(result, e.message.toString())
@@ -304,8 +311,9 @@ class WireguardFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     private fun getUploadData(result: Result) {
         scope.launch(Dispatchers.IO) {
             try {
-                val uploadData = futureBackend.await().getTransferData(tunnel(tunnelName)).txBytes
-                flutterSuccess(result, uploadData)
+                val uploadData = futureBackend.await().getStatistics(tunnel(tunnelName)).totalTx()
+                Log.e(TAG, "getUploadData - Success - ${formatKBorMB(uploadData)}")
+                flutterSuccess(result, formatKBorMB(uploadData))
             } catch (e: Throwable) {
                 Log.e(TAG, "getUploadData - ERROR - ${e.message}")
                 flutterError(result, e.message.toString())

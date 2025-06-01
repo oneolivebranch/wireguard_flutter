@@ -1,3 +1,4 @@
+
 import 'package:flutter/services.dart';
 
 import 'wireguard_flutter_platform_interface.dart';
@@ -57,4 +58,16 @@ class WireGuardFlutterMethodChannel extends WireGuardFlutterInterface {
               )
             : VpnStage.disconnected,
       );
+
+  @override
+  Future<String> getDownloadData()async {
+    final data= await _methodChannel.invokeMethod("getDownloadData");
+    return data??"";
+  }
+
+  @override
+  Future<String> getUploadData()async {
+    final data=await _methodChannel.invokeMethod("getUploadData");
+    return data??"";
+  }
 }

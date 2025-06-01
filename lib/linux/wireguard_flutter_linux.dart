@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -113,5 +114,17 @@ class WireGuardFlutterLinux extends WireGuardFlutterInterface {
     final processResultList = await shell.run('sudo wg');
     final process = processResultList.first;
     return process.outLines.any((line) => line.trim() == 'interface: $name');
+  }
+
+  @override
+  Future<String> getDownloadData() {
+    // TODO: implement getDownloadData
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String> getUploadData() {
+    // TODO: implement getUploadData
+    throw UnimplementedError();
   }
 }

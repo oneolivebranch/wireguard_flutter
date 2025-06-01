@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:wireguard_flutter/wireguard_flutter.dart';
 
 void main() {
@@ -26,7 +25,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final wireguard = WireGuardFlutter.instance;
-  final WireguardService _wireguardService = WireguardService();
   String _downloadCount = 'N/A';
   String _uploadCount = 'N/A';
   late String name;
@@ -34,7 +32,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _getWireGuardDataCounts();
+   // _getWireGuardDataCounts();
     wireguard.vpnStageSnapshot.listen((event) {
       debugPrint("status changed $event");
       if (mounted) {
@@ -58,10 +56,9 @@ class _MyAppState extends State<MyApp> {
 
   void _getWireGuardDataCounts() async {
     try {
-      final dataCounts = await _wireguardService.getDataCounts();
+      final dataCounts = await wireguard.getDownloadData();
       setState(() {
-        _downloadCount = dataCounts['download'].toString();
-        _uploadCount = dataCounts['upload'].toString();
+        _downloadCount = dataCounts.toString();
       });
     } catch (e) {
       print('Failed to get data counts: $e');
@@ -193,26 +190,11 @@ class _MyAppState extends State<MyApp> {
 }
 
 const String conf = '''[Interface]
-Address = 192.168.6.163/32
+Address = 192.168.6.184/32
 DNS = 1.1.1.1,8.8.8.8
-PrivateKey = mBVsI8hk7a1JPJqXuVELOTnSSI2tL6Q4HamW5gxEgEk=
+PrivateKey = +Dc2RcOw9qQ/kof1PeHJyeGEX01IAlf0clYeXBanDUo=
 [Peer]
-publickey=MKxF3963hjD/MLGSIcGRLaco/N5uDN/Dslt/k675Knc=
+publickey=BvKWHoBImVpLNmKCiFI/kot5FsCapXX67rnHlG9y8Aw=
 AllowedIPs = 0.0.0.0/0, ::/0
-Endpoint = indo7.vpnjantit.com:1024
+Endpoint = br1.vpnjantit.com:443
 ''';
-
-class WireguardService {
-  static const platform =
-      MethodChannel('billion.group.wireguard_flutter/wgcontrol');
-
-  Future<Map<String, int>> getDataCounts() async {
-    try {
-      final Map<dynamic, dynamic> result =
-          await platform.invokeMethod('getDataCounts');
-      return Map<String, int>.from(result);
-    } catch (e) {
-      throw 'Failed to get data counts: $e';
-    }
-  }
-}
