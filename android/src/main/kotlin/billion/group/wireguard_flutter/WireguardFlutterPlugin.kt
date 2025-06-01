@@ -10,7 +10,6 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.PluginRegistry
 
 import android.app.Activity
-import io.flutter.embedding.android.FlutterActivity
 import android.content.Intent
 import android.content.Context
 import android.net.ConnectivityManager
@@ -65,7 +64,7 @@ class WireguardFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     }
 
     override fun onAttachedToActivity(activityPluginBinding: ActivityPluginBinding) {
-        this.activity = activityPluginBinding.activity as FlutterActivity
+        this.activity = activityPluginBinding.activity
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
@@ -73,7 +72,7 @@ class WireguardFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     }
 
     override fun onReattachedToActivityForConfigChanges(activityPluginBinding: ActivityPluginBinding) {
-        this.activity = activityPluginBinding.activity as FlutterActivity
+        this.activity = activityPluginBinding.activity
     }
 
     override fun onDetachedFromActivity() {
