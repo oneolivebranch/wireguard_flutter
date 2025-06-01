@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -59,4 +60,16 @@ class WireGuardFlutter extends WireGuardFlutterInterface {
 
   @override
   Future<VpnStage> stage() => _instance.stage();
+
+  @override
+  Future<String> getDownloadData() async {
+    final response = await _instance.getDownloadData();
+    return response;
+  }
+
+  @override
+  Future<String> getUploadData()async {
+    final response=await _instance.getUploadData();
+    return response;
+  }
 }

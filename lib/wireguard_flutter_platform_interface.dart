@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 abstract class WireGuardFlutterInterface {
   Stream<VpnStage> get vpnStageSnapshot;
 
@@ -15,6 +17,10 @@ abstract class WireGuardFlutterInterface {
   Future<VpnStage> stage();
   Future<bool> isConnected() =>
       stage().then((stage) => stage == VpnStage.connected);
+
+
+  Future<String> getUploadData();
+  Future<String> getDownloadData();
 }
 
 enum VpnStage {
