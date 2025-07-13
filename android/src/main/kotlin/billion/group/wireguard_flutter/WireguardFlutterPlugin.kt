@@ -218,8 +218,27 @@ class WireguardFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
         scope.launch(Dispatchers.IO) {
             try {
                 if (futureBackend.await().runningTunnelNames.isEmpty()) {
+                    if (isVpnActive()) {
+                        Log.i(TAG, "Tunnel names empty but VPN active, attempting disconnect")
+                        // Try to force disconnect by recreating the tunnel and setting state to DOWN
+                        try {
+                            updateStage("disconnecting")
+                            futureBackend.await().setState(
+                                tunnel(tunnelName),
+                                Tunnel.State.DOWN,
+                                config
+                            )
+                        } catch (e: Exception) {
+                            Log.w(TAG, "Failed to force disconnect: ${e.message}")
+                            // Continue and return success, as we've done our best attempt
+                        }
+                    }
+
                     updateStage("disconnected")
-                    throw Exception("Tunnel is not running")
+                    flutterSuccess(result, "")
+                    return@launch
+//                    updateStage("disconnected")
+//                    throw Exception("Tunnel is not running")
                 }
                 updateStage("disconnecting")
                 futureBackend.await().setState(
